@@ -17,11 +17,11 @@ type Response struct {
 }
 
 func main() {
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 
-	r.HandleFunc("/consumer-one", consumerOne).Methods("GET")
-	r.HandleFunc("/consumer-two", consumerTwo).Methods("GET")
-	r.HandleFunc("/consumer-three", consumerThree).Methods("GET")
+	r.HandleFunc("/consumer-one/", consumerOne).Methods("GET")
+	r.HandleFunc("/consumer-two/", consumerTwo).Methods("GET")
+	r.HandleFunc("/consumer-three/", consumerThree).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8001", r))
 }

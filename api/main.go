@@ -30,7 +30,7 @@ func (list TokensList) Swap(i, j int)      { list[i], list[j] = list[j], list[i]
 func (list TokensList) Less(i, j int) bool { return list[i].Count < list[j].Count }
 
 func main() {
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 
 	r.HandleFunc("/top-ten-words/", handleTopTenWords).Methods("POST")
 
