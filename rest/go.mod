@@ -1,4 +1,4 @@
-module syahnur197/gotest
+module syahnur197/gotest/rest
 
 go 1.17
 
