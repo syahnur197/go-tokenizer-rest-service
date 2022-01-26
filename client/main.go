@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -22,6 +23,7 @@ func main() {
 	r.HandleFunc("/consumer-one/", consumerOne).Methods("GET")
 	r.HandleFunc("/consumer-two/", consumerTwo).Methods("GET")
 	r.HandleFunc("/consumer-three/", consumerThree).Methods("GET")
+	r.HandleFunc("/consumer-four/", consumerFour).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8001", r))
 }
@@ -43,6 +45,24 @@ func consumerThree(w http.ResponseWriter, r *http.Request) {
 
 	consumer(w, r, text)
 
+}
+
+func consumerFour(w http.ResponseWriter, r *http.Request) {
+	file, err := os.Open("GoLang_Test.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		if err = file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	content, _ := ioutil.ReadAll(file)
+
+	text := string(content)
+
+	consumer(w, r, text)
 }
 
 func consumer(w http.ResponseWriter, r *http.Request, text string) {
