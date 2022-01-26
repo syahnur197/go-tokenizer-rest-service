@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,10 +13,22 @@ import (
 )
 
 type Response struct {
-	Success bool        `json:"success"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Success bool       `json:"success"`
+	Message string     `json:"message"`
+	Data    TokensList `json:"data"`
 }
+
+type Token struct {
+	Text  string `json:"text"`
+	Count int    `json:"count"`
+}
+
+// Sortable Type
+type TokensList []Token
+
+func (list TokensList) Len() int           { return len(list) }
+func (list TokensList) Swap(i, j int)      { list[i], list[j] = list[j], list[i] }
+func (list TokensList) Less(i, j int) bool { return list[i].Count < list[j].Count }
 
 func main() {
 	r := mux.NewRouter().StrictSlash(true)
@@ -66,6 +79,8 @@ func consumerFour(w http.ResponseWriter, r *http.Request) {
 }
 
 func consumer(w http.ResponseWriter, r *http.Request, text string) {
+	fmt.Println("Tokenizing and sorting")
+
 	resp, err := http.PostForm("http://localhost:8000/top-ten-words/", url.Values{"text": {text}})
 
 	if err != nil {
@@ -90,7 +105,17 @@ func consumer(w http.ResponseWriter, r *http.Request, text string) {
 
 	var target Response
 
+	fmt.Println(string(body))
+
 	json.Unmarshal(body, &target)
+
+	tokensList := target.Data
+
+	for _, token := range tokensList {
+		fmt.Println("Text: ", token.Text)
+		fmt.Println("Count: ", token.Count)
+		fmt.Println("")
+	}
 
 	responseJson(w, Response{
 		Success: true,
